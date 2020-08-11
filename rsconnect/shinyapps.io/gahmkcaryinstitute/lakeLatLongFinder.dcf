@@ -1,0 +1,12 @@
+name: lakeLatLongFinder
+title: lakeLatLongFinder
+username:
+account: gahmkcaryinstitute
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2644138
+bundleId: 3479457
+url: https://gahmkcaryinstitute.shinyapps.io/lakeLatLongFinder/
+when: 1596656323.21652
+asMultiple: FALSE
+asStatic: FALSE
