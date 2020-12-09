@@ -17,6 +17,8 @@ runApp("app.R")
 ## Data sources
 The data for this app is from NHDPlus, version 2 (https://nhdplus.com/NHDPlus/NHDPlusV2_data.php). The datasets used are the shapefiles for the Great Lakes region and the Upper Mississippi River region.
 
+You can find additional information about WBIC codes and max depths at [this site](https://dnr.wi.gov/lakes/lakepages/Default.aspx).
+
 ## Contributors
 App developed by Kaija Gahm. Help with spatial analyses from Stuart Jones.
 
