@@ -11,14 +11,15 @@ source("appfuns.R")
 
 
 # reading using read_sf instead of readOGR for faster loading
-shape <- st_read("data/GLMS_shape_combined_latlong.shp") %>%
-  st_transform(.,"+proj=longlat +datum=WGS84") %>%
+shape <- st_read("data/lakes/lakes.shp") %>%
   mutate(label = paste0("<b>long:</b> ", LONGITUDE, "<br/>", 
                         "<b>lat:</b> ", LATITUDE, "<br/>", 
+                        "<b>COMID:</b> ", COMID, "<br/>",
                         "<b>GNIS ID:</b> ", GNIS_ID, "<br/>", 
                         "<b>GNIS name:</b> ", GNIS_NAME, "<br/>", 
-                        "<b>Area (km2):</b> ", AREASQKM, "<br/>", 
-                        "<b>Reach code:</b> ", REACHCODE, "<br/>"))
+                        "<b>Area (km2):</b> ", AREASQKM, "<br/>",
+                        "<b>State:</b> ", stateName, "<br/>",
+                        "<b>County:</b> ", countyName, "<br/>"))
 
 shape <- shape %>%
   mutate(UNDERC = case_when(LONGITUDE > -89.548857 & LONGITUDE < -89.464963 & LATITUDE > 46.206879 & LATITUDE < 46.266711 ~ TRUE,
@@ -29,10 +30,9 @@ shape <- shape %>%
 # Building the user interface (UI)
 ui <- fluidPage(
   titlePanel("MFE Lakes lat/long finder"),
+  p1, p2, p3, # intro text-- located in appfuns.R
   sidebarLayout(
     sidebarPanel(
-      p1, p2, p3, # intro text-- located in appfuns.R
-      
       # Let the user choose how they want to search
       selectInput("howsearch", "How would you like to search?", choices = c("View a subset of lakes" = "subset", "Search by lake name" = "search"), selected = "subset"),
       
@@ -50,7 +50,7 @@ ui <- fluidPage(
         # Search
         textInput("lakename", label = "Enter a lake name, or part of one:", 
                   placeholder = "Lake name (case insensitive)"),
-        selectInput("searchwithin", "Search within:", choices = c("All lakes","UNDERC lakes", "NHLD lakes", "Great Lakes region", "Upper Mississippi River region")),
+        selectInput("searchwithin", "Search within:", choices = c("All lakes", "UNDERC lakes", "NHLD lakes", "Great Lakes region", "Upper Mississippi River region", counties, states)),
         actionButton("submitsearch", "Show results")
       )
     ),
@@ -106,6 +106,12 @@ server <- function(input, output, session) {
     }else if(input$searchwithin == "Upper Mississippi River region"){
       subdf <- subdf %>%
         filter(regionID == "MS")
+    }else if(input$searchwithin %in% states){
+      subdf <- subdf %>%
+        filter(stateName == input$searchwithin)
+    }else if(input$searchwithin %in% counties){
+      subdf <- subdf %>%
+        filter(paste(countyName, stateCode) == input$searchwithin)
     }else{
       subdf <- subdf
     }
@@ -113,7 +119,7 @@ server <- function(input, output, session) {
     # Make the map
     output$map <- renderLeaflet({
       validate(
-        need(nrow(subdf) > 0, "Couldn't find that lake name in the selected region--check your spelling or try a different name")
+        need(nrow(subdf) > 0, searchErrorMessage)
       )
       # make the basic leaflet map with polygons
       leaflet(subdf) %>%
