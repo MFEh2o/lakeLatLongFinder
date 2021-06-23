@@ -12,7 +12,7 @@ library(shiny)
 runApp("app.R")
 ```
 
-2) The easier way: visit the app online. As of August 2020, you can [access it here](https://gahmkcaryinstitute.shinyapps.io/lakeLatLongFinder/)
+2) The easier way: visit the app online. As of June 2021, you can [access it here](https://joneslabnd.shinyapps.io/lakeLatLongFinder/)
 
 ## Data sources
 The data for this app is from NHDPlus, version 2 (https://nhdplus.com/NHDPlus/NHDPlusV2_data.php). The datasets used are the shapefiles for the Great Lakes region and the Upper Mississippi River region.
